@@ -192,13 +192,13 @@ private fun WelcomeScreen() {
                 Text("Stock", color = Color.White, fontSize = 39.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.5).sp)
                 Text("Pro", color = emerald, fontSize = 39.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.5).sp)
             }
-            Text("P R E M I U M", color = mint, fontSize = 12.sp, fontWeight = FontWeight.Medium, letterSpacing = 5.sp)
+            Text("P R E M I U M   E D I T I O N", color = mint, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 3.2.sp)
             Spacer(Modifier.height(24.dp))
             Text("Tu negocio en buenas manos", color = Color.White.copy(alpha = .94f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                Text("Más que un inventario… ", color = Color(0xFFB8D1C8), fontSize = 13.sp)
-                Text("es tu aliado.", color = emerald, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text("Control inteligente. ", color = Color(0xFFB8D1C8), fontSize = 13.sp)
+                Text("Negocio en equilibrio.", color = emerald, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.weight(.75f))
             // Custom glowing progress rail.
@@ -262,8 +262,9 @@ private fun Dashboard(modifier: Modifier, count: Int, low: Int, products: List<P
     val lowProducts = if (notificationsEnabled) products.filter { it.stockQuantity <= it.minimumStock }.take(3) else emptyList()
     Column(modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF071014), AppBg, Color(0xFF06110D)))).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).padding(top = 12.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(48.dp).background(Brush.linearGradient(listOf(Color(0xFF1D7250), Color(0xFF102329))), RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Inventory2, null, tint = Lime, modifier = Modifier.size(28.dp))
+            Box(Modifier.size(50.dp).background(Brush.linearGradient(listOf(Color(0xFF123E32), Color(0xFF0A2024), Color(0xFF102329))), RoundedCornerShape(16.dp)).border(1.dp, Mint.copy(alpha = .48f), RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Inventory2, null, tint = Lime, modifier = Modifier.size(27.dp))
+                Box(Modifier.align(Alignment.BottomEnd).padding(7.dp).size(5.dp).background(Mint, CircleShape))
             }
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
@@ -277,7 +278,11 @@ private fun Dashboard(modifier: Modifier, count: Int, low: Int, products: List<P
         }
         Spacer(Modifier.height(18.dp))
         Text("Hola, bienvenido", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold, letterSpacing = (-.5).sp)
-        Text("TU NEGOCIO, BAJO CONTROL  ·  RESUMEN GENERAL", color = Muted, style = MaterialTheme.typography.labelSmall, letterSpacing = .8.sp)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(6.dp).background(Lime, CircleShape))
+            Spacer(Modifier.width(7.dp))
+            Text("TU NEGOCIO, BAJO CONTROL  ·  RESUMEN GENERAL", color = Muted, style = MaterialTheme.typography.labelSmall, letterSpacing = .8.sp)
+        }
         Spacer(Modifier.height(18.dp))
         Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(24.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Lime.copy(alpha = .55f)), modifier = Modifier.fillMaxWidth().clickable(onClick = onInventory)) {
             Row(Modifier.fillMaxWidth().background(Brush.linearGradient(listOf(Color(0xFF12563F), Color(0xFF0C2A28), Color(0xFF09151A)))).padding(19.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -292,13 +297,13 @@ private fun Dashboard(modifier: Modifier, count: Int, low: Int, products: List<P
         }
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-            DashboardMetric("Productos", count.toString(), Icons.Default.ShoppingBag, Blue, Modifier.weight(1f), onInventory)
-            DashboardMetric("Stock bajo", low.toString(), Icons.Default.Warning, Orange, Modifier.weight(1f), onInventory)
+            DashboardMetric("Productos", count.toString(), Icons.Default.ShoppingBag, Mint, Modifier.weight(1f), onInventory)
+            DashboardMetric("Stock bajo", low.toString(), Icons.Default.Warning, Color(0xFFFFC477), Modifier.weight(1f), onInventory)
         }
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-            DashboardMetric("Ventas", money(totalSales), Icons.Default.ShoppingCart, Color(0xFF087BEA), Modifier.weight(1f), {})
-            DashboardMetric("Balance", money(totalSales - totalPurchases), Icons.Default.TrendingUp, Color(0xFF079B63), Modifier.weight(1f), {})
+            DashboardMetric("Ventas", money(totalSales), Icons.Default.ShoppingCart, Blue, Modifier.weight(1f), {})
+            DashboardMetric("Balance", money(totalSales - totalPurchases), Icons.Default.TrendingUp, Lime, Modifier.weight(1f), {})
         }
         Spacer(Modifier.height(18.dp))
         Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(20.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Hairline.copy(alpha = .9f)), modifier = Modifier.fillMaxWidth()) {
