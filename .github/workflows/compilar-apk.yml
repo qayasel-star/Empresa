@@ -1,0 +1,77 @@
+
+name: Compilar StockPro Premium APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Buscar proyecto Android
+        shell: bash
+        run: |
+          set -e
+
+          if [ ! -f settings.gradle ] && [ ! -f settings.gradle.kts ]; then
+            FOUND="$(find . -mindepth 2 -maxdepth 5 \
+              \( -name settings.gradle -o -name settings.gradle.kts \) \
+              -print -quit)"
+
+            if [ -z "$FOUND" ]; then
+              echo "ERROR: No se encontró settings.gradle."
+              echo "Revisa que el ZIP esté descomprimido."
+              find . -maxdepth 3 -type f | head -200
+              exit 1
+            fi
+
+            PROJECT_DIR="$(dirname "$FOUND")"
+            echo "Proyecto encontrado en: $PROJECT_DIR"
+            echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          else
+            echo "PROJECT_DIR=." >> "$GITHUB_ENV"
+          fi
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar APK de prueba
+        shell: bash
+        run: |
+          set -e
+          cd "$PROJECT_DIR"
+
+          if [ ! -f gradlew ]; then
+            echo "ERROR: Falta el archivo gradlew."
+            exit 1
+          fi
+
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Publicar APK descargable
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: StockPro-Premium-APK
+          path: |
+            **/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
