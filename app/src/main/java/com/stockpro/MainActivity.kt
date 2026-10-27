@@ -1,6 +1,9 @@
 package com.stockpro
 
 import android.os.Bundle
+
+import androidx.compose.foundation.horizontalScroll
+
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
