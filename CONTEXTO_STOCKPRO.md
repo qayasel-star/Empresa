@@ -7,7 +7,7 @@ Este archivo resume las decisiones y el estado del proyecto para continuar desde
 - Aplicación Android nativa para una tienda o comercio general.
 - Dispositivo inicial: un teléfono Android.
 - Prioridad: **offline-first**, usando almacenamiento local como fuente de verdad.
-- Repositorio GitHub oficial y único: `https://github.com/qayasel-star/Empresa`.
+- Repositorio GitHub independiente: `StockPro`.
 - Interfaz en español.
 - Mantener StockPro separado de todos los demás proyectos.
 
@@ -83,15 +83,7 @@ Configuración prevista: paquete `com.stockpro`, Android Gradle Plugin 8.7.3, Ko
 5. Añadir copias de seguridad y escáner con cámara.
 6. Cuando lleguen más imágenes, analizarlas en conjunto y ajustar el diseño con fidelidad.
 7. Generar wrapper, compilar y probar en un dispositivo antes de dar el APK por listo.
-8. Publicar todas las actualizaciones en el único repositorio `Empresa` (`https://github.com/qayasel-star/Empresa`).
+8. Publicar en el repositorio GitHub independiente `StockPro`.
 
 ## Instrucción para iniciar el nuevo chat
 «Continúa StockPro como proyecto independiente. Antes de cada cambio, audita lo existente y lo nuevo. Entrega el código completo y distingue lo implementado, probado y pendiente. Las imágenes adicionales se incorporarán cuando estén disponibles. No afirmes que el APK compila hasta verificarlo realmente.»
-
-
-## Actualización visual Premium (octubre de 2026)
-- La maqueta compartida por el usuario es la referencia visual prioritaria: negro/verde petróleo, verde lima neón, tarjetas redondeadas con profundidad, identidad StockPro Premium, navegación inferior consistente y paneles claros de leer.
-- Se mejoraron en esta actualización el encabezado y bienvenida del panel, la tarjeta de valor del inventario, las tarjetas de métricas, las filas de producto, los encabezados compartidos y la paleta Material 3.
-- Se conservaron las rutas y acciones existentes; este cambio es principalmente visual.
-- Pendiente: validar en el teléfono real y compilar esta versión mediante GitHub Actions. No se afirma compilación verificada de este ZIP hasta que el workflow termine con éxito.
-- Nombre fijo de cada ZIP de actualización: `StockPro-Premium-Proyecto-Completo.zip`.

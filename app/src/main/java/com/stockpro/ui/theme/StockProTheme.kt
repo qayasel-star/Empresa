@@ -6,29 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val StockProColors = darkColorScheme(
-    primary = Color(0xFFB6FF68),
-    onPrimary = Color(0xFF07190F),
-    primaryContainer = Color(0xFF174C31),
-    onPrimaryContainer = Color(0xFFD9FFE4),
-    secondary = Color(0xFF39E989),
-    onSecondary = Color(0xFF052016),
-    secondaryContainer = Color(0xFF103F2D),
-    onSecondaryContainer = Color(0xFFC5F8D8),
-    background = Color(0xFF030E0C),
-    onBackground = Color(0xFFF3F8F4),
-    surface = Color(0xFF081C17),
-    onSurface = Color(0xFFF3F8F4),
-    surfaceVariant = Color(0xFF12352A),
-    onSurfaceVariant = Color(0xFFB6C9BC),
-    outline = Color(0xFF315A48),
-    error = Color(0xFFFF7777),
-    onError = Color(0xFF2B0808)
+    primary = Color(0xFF63FF91), onPrimary = Color(0xFF031109),
+    secondary = Color(0xFF38D878), onSecondary = Color(0xFF031109),
+    background = Color(0xFF030907), onBackground = Color(0xFFF0F4EF),
+    surface = Color(0xFF0A1711), onSurface = Color(0xFFF0F4EF),
+    surfaceVariant = Color(0xFF163524), onSurfaceVariant = Color(0xFF91A99A),
+    error = Color(0xFFFF8A80)
 )
 
-@Composable
-fun StockProTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = StockProColors,
-        content = content
-    )
+@Composable fun StockProTheme(content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = StockProColors, content = content)
 }
