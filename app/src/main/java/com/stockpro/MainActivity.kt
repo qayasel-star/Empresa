@@ -56,10 +56,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -111,98 +111,104 @@ private fun StockProApp(vm: StockProViewModel = viewModel()) {
 
 @Composable
 private fun WelcomeScreen() {
-    val motion = rememberInfiniteTransition(label = "stockpro-cinematic-intro")
-    val pulse by motion.animateFloat(.94f, 1.075f, infiniteRepeatable(tween(1550, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "logo-pulse")
-    val glow by motion.animateFloat(.28f, .92f, infiniteRepeatable(tween(1150, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "logo-glow")
-    val orbit by motion.animateFloat(0f, 360f, infiniteRepeatable(tween(9000, easing = androidx.compose.animation.core.LinearEasing)), label = "orbit-rotation")
-    val scan by motion.animateFloat(-.2f, 1.2f, infiniteRepeatable(tween(2300, easing = FastOutSlowInEasing)), label = "scanline")
-    val rise by motion.animateFloat(0f, 1f, infiniteRepeatable(tween(2800, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "horizon-rise")
-    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF010407), Color(0xFF03120F), Color(0xFF020609))))) {
-        // Nebulosa y haces de luz detrás del emblema.
-        Box(Modifier.align(Alignment.Center).size(330.dp).scale(pulse).background(Brush.radialGradient(listOf(Lime.copy(alpha = glow * .19f), Mint.copy(alpha = glow * .075f), Color.Transparent)), CircleShape))
+    val motion = rememberInfiniteTransition(label = "stockpro_cinematic_intro")
+    val pulse by motion.animateFloat(.92f, 1.08f, infiniteRepeatable(tween(1450, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "logoPulse")
+    val orbit by motion.animateFloat(0f, 360f, infiniteRepeatable(tween(7200, easing = androidx.compose.animation.core.LinearEasing)), label = "orbit")
+    val sweep by motion.animateFloat(-.45f, 1.45f, infiniteRepeatable(tween(1900, easing = FastOutSlowInEasing), RepeatMode.Restart), label = "lightSweep")
+    val progress by motion.animateFloat(.08f, .96f, infiniteRepeatable(tween(3000, easing = FastOutSlowInEasing), RepeatMode.Restart), label = "progress")
+    val breathe by motion.animateFloat(.35f, .95f, infiniteRepeatable(tween(1100), RepeatMode.Reverse), label = "ambientGlow")
+    val emerald = Color(0xFF00FF91)
+    val mint = Color(0xFF25F5D0)
+    val deep = Color(0xFF020707)
+
+    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF020706), Color(0xFF031510), Color(0xFF010404))))) {
+        // Animated cinematic environment: perspective grid, moving particles, light field and orbit rings.
         Canvas(Modifier.fillMaxSize()) {
             val w = size.width; val h = size.height
-            // Puntos de energía con posiciones deterministas: no provocan trabajo aleatorio por fotograma.
-            for (i in 0 until 48) {
-                val x = ((i * 97 + 31) % 997) / 997f * w
-                val baseY = ((i * 173 + 59) % 991) / 991f * h
-                val y = (baseY + rise * (if (i % 2 == 0) 18f else -18f)).coerceIn(0f, h)
-                val radius = if (i % 7 == 0) 2.1f else 1.0f
-                drawCircle(if (i % 3 == 0) Mint.copy(alpha = .68f) else Lime.copy(alpha = .42f), radius, Offset(x, y))
-                if (i % 8 == 0) drawLine(Lime.copy(alpha = .16f), Offset(x, y + 5f), Offset(x - 10f, y + 28f), strokeWidth = 1f)
+            val cx = w * .5f; val cy = h * .355f
+            drawRect(Brush.radialGradient(listOf(Color(0xFF0B6C45).copy(alpha = .25f), Color.Transparent), Offset(cx, cy), w * .72f))
+            drawRect(Brush.radialGradient(listOf(Color(0xFF00D9C0).copy(alpha = .10f), Color.Transparent), Offset(cx, h * .72f), w * .68f))
+            // Distant perspective lines converge on the luminous horizon.
+            val horizonY = h * .66f
+            for (i in 0..16) {
+                val x = w * i / 16f
+                drawLine(Color(0xFF20DCA0).copy(alpha = .055f), Offset(cx, horizonY), Offset(x, h), strokeWidth = 1f)
             }
-            // Horizonte digital en perspectiva en el tercio inferior.
-            val horizon = h * .70f + rise * 13f
-            for (i in 0..11) {
-                val y = horizon + i * i * 2.25f
-                if (y < h) drawLine(Mint.copy(alpha = .12f + i * .006f), Offset(0f, y), Offset(w, y), strokeWidth = 1f)
+            for (i in 1..9) {
+                val t = i / 9f
+                val y = horizonY + (h - horizonY) * t * t
+                drawLine(Color(0xFF20DCA0).copy(alpha = .07f * t), Offset(0f, y), Offset(w, y), strokeWidth = 1f)
             }
-            for (i in -8..8) drawLine(Lime.copy(alpha = .11f), Offset(w * .5f, horizon), Offset(w * .5f + i * w * .105f, h), strokeWidth = 1f)
-            // Destello horizontal que recorre lentamente la escena.
-            val beamY = h * (.24f + scan * .49f)
-            drawLine(Brush.horizontalGradient(listOf(Color.Transparent, Mint.copy(alpha = .13f), Lime.copy(alpha = .34f), Mint.copy(alpha = .13f), Color.Transparent)), Offset(0f, beamY), Offset(w, beamY), strokeWidth = 2f)
+            // Horizon beam
+            drawLine(Brush.horizontalGradient(listOf(Color.Transparent, emerald.copy(alpha = .12f), mint.copy(alpha = .72f), emerald.copy(alpha = .12f), Color.Transparent)), Offset(w * .06f, horizonY), Offset(w * .94f, horizonY), strokeWidth = 2.4f)
+            // Particles follow gently shifting paths.
+            for (i in 0..39) {
+                val seed = i * 37.7f
+                val x = ((seed + w * ((i % 7) / 7f) + sweep * w * .13f) % w)
+                val y = h * (.10f + ((i * 19 % 73) / 100f))
+                val r = if (i % 6 == 0) 2.5f else 1.15f
+                drawCircle(if (i % 3 == 0) mint.copy(alpha = .45f) else emerald.copy(alpha = .32f), r, Offset(x, y))
+                if (i % 9 == 0) drawLine(emerald.copy(alpha = .18f), Offset(x - 8f, y), Offset(x + 8f, y), strokeWidth = 1f)
+            }
+            // Rotating dual energy rings around the brand emblem.
+            val rx = w * .31f; val ry = h * .045f
+            rotate(orbit, pivot = Offset(cx, cy + h * .015f)) {
+                drawArc(Brush.sweepGradient(listOf(Color.Transparent, emerald.copy(alpha = .9f), mint.copy(alpha = .9f), Color.Transparent)), 205f, 118f, false, Offset(cx - rx, cy - ry), androidx.compose.ui.geometry.Size(rx * 2, ry * 2), style = Stroke(width = 3.2f))
+            }
+            rotate(-orbit * .72f, pivot = Offset(cx, cy + h * .015f)) {
+                drawArc(Brush.sweepGradient(listOf(Color.Transparent, mint.copy(alpha = .75f), emerald.copy(alpha = .25f), Color.Transparent)), 12f, 132f, false, Offset(cx - rx * 1.12f, cy - ry * 1.25f), androidx.compose.ui.geometry.Size(rx * 2.24f, ry * 2.5f), style = Stroke(width = 1.5f))
+            }
+            // Neon cube mark built from vector paths; layered strokes create a luminous 3D edge.
+            val unit = w * .145f * pulse
+            val top = Offset(cx, cy - unit * 1.12f)
+            val left = Offset(cx - unit, cy - unit * .53f)
+            val right = Offset(cx + unit, cy - unit * .53f)
+            val mid = Offset(cx, cy + unit * .03f)
+            val leftBottom = Offset(cx - unit, cy + unit * .65f)
+            val rightBottom = Offset(cx + unit, cy + unit * .65f)
+            val bottom = Offset(cx, cy + unit * 1.18f)
+            fun edge(points: List<Offset>, color: Color, width: Float) {
+                val path = Path().apply { moveTo(points.first().x, points.first().y); points.drop(1).forEach { lineTo(it.x, it.y) } }
+                drawPath(path, color.copy(alpha = .12f), style = Stroke(width = width * 4.8f))
+                drawPath(path, color.copy(alpha = .35f), style = Stroke(width = width * 2.2f))
+                drawPath(path, color, style = Stroke(width = width))
+            }
+            edge(listOf(top, left, mid, right, top), mint, 3.4f)
+            edge(listOf(left, leftBottom, bottom, rightBottom, right), emerald, 3.4f)
+            edge(listOf(mid, Offset(cx, cy + unit * .72f)), mint, 2.6f)
+            edge(listOf(left, Offset(cx - unit * .40f, cy - unit * .28f), Offset(cx - unit * .40f, cy + unit * .34f), mid), emerald, 2.8f)
+            edge(listOf(mid, Offset(cx + unit * .42f, cy - unit * .28f), Offset(cx + unit * .42f, cy + unit * .34f), right), mint, 2.8f)
+            // Moving diagonal highlight across the emblem.
+            val highlightX = cx + (sweep - .5f) * unit * 2.4f
+            drawLine(Brush.verticalGradient(listOf(Color.Transparent, Color.White.copy(alpha = .7f), Color.Transparent), startY = cy - unit, endY = cy + unit), Offset(highlightX, cy - unit), Offset(highlightX + unit * .24f, cy + unit), strokeWidth = 2.2f)
+            drawCircle(emerald.copy(alpha = breathe * .13f), unit * 1.85f, Offset(cx, cy))
         }
-        // Halo y anillos orbitales animados.
-        Box(Modifier.align(Alignment.Center).offset(y = (-78).dp).size(206.dp).rotate(orbit).border(1.dp, Brush.sweepGradient(listOf(Color.Transparent, Lime.copy(alpha = .9f), Mint.copy(alpha = .55f), Color.Transparent, Lime.copy(alpha = .65f))), CircleShape))
-        Box(Modifier.align(Alignment.Center).offset(y = (-78).dp).size(174.dp).rotate(-orbit * .72f).border(1.dp, Brush.sweepGradient(listOf(Mint.copy(alpha = .7f), Color.Transparent, Lime.copy(alpha = .65f), Color.Transparent)), CircleShape))
-        // Línea de luz en la base, como una plataforma holográfica.
-        Box(Modifier.align(Alignment.Center).offset(y = 42.dp).fillMaxWidth(.72f).height(24.dp).background(Brush.radialGradient(listOf(Lime.copy(alpha = glow * .32f), Mint.copy(alpha = .12f), Color.Transparent)), CircleShape))
-        Column(Modifier.align(Alignment.Center).fillMaxWidth().padding(horizontal = 28.dp).offset(y = (-8).dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.height(3.dp))
-            Box(Modifier.size(142.dp).scale(pulse).background(Brush.radialGradient(listOf(Color(0xFF164E3C), Color(0xFF071A19), Color(0xFF03090C))), RoundedCornerShape(39.dp)).border(1.dp, Brush.linearGradient(listOf(Lime.copy(alpha = .95f), Mint.copy(alpha = .65f), Color(0xFF102C29))), RoundedCornerShape(39.dp)), contentAlignment = Alignment.Center) {
-                Box(Modifier.size(119.dp).background(Brush.radialGradient(listOf(Lime.copy(alpha = glow * .16f), Color.Transparent)), CircleShape))
-                Icon(Icons.Default.Inventory2, null, tint = Lime.copy(alpha = .16f), modifier = Modifier.size(91.dp).offset(x = 1.dp, y = 2.dp))
-                Icon(Icons.Default.Inventory2, null, tint = Brush.linearGradient(listOf(Color(0xFFE1FFE9), Lime, Mint)).let { Lime }, modifier = Modifier.size(78.dp))
-                Icon(Icons.Default.TrendingUp, null, tint = Color.White, modifier = Modifier.size(30.dp).align(Alignment.BottomEnd).offset(x = (-14).dp, y = (-14).dp))
-                Box(Modifier.align(Alignment.TopCenter).offset(y = 3.dp).fillMaxWidth(.56f).height(2.dp).background(Brush.horizontalGradient(listOf(Color.Transparent, Color.White.copy(alpha = .9f), Color.Transparent))))
-            }
-            Spacer(Modifier.height(31.dp))
+
+        Column(Modifier.fillMaxSize().padding(horizontal = 30.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.weight(1.12f))
+            // Reserve space for the animated vector emblem above; logo is kept as crisp native text.
+            Spacer(Modifier.height(210.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Stock", color = Color.White, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black, letterSpacing = (-1.5).sp)
-                Text("Pro", color = Lime, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black, letterSpacing = (-1.5).sp)
+                Text("Stock", color = Color.White, fontSize = 39.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.5).sp)
+                Text("Pro", color = emerald, fontSize = 39.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.5).sp)
             }
-            Text("P R E M I U M", color = Mint, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, letterSpacing = 5.5.sp)
+            Text("P R E M I U M", color = mint, fontSize = 12.sp, fontWeight = FontWeight.Medium, letterSpacing = 5.sp)
+            Spacer(Modifier.height(24.dp))
+            Text("Tu negocio en buenas manos", color = Color.White.copy(alpha = .94f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                Text("Más que un inventario… ", color = Color(0xFFB8D1C8), fontSize = 13.sp)
+                Text("es tu aliado.", color = emerald, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            }
+            Spacer(Modifier.weight(.75f))
+            // Custom glowing progress rail.
+            Box(Modifier.fillMaxWidth(.66f).height(4.dp).background(Color(0xFF16382D), RoundedCornerShape(50))) {
+                Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(Brush.horizontalGradient(listOf(emerald, mint)), RoundedCornerShape(50)))
+            }
             Spacer(Modifier.height(14.dp))
-            Text("Tu negocio en buenas manos", color = Color.White.copy(alpha = .9f), style = MaterialTheme.typography.bodyLarge)
-            Spacer(Modifier.height(40.dp))
-            Box(Modifier.fillMaxWidth(.70f).height(4.dp).background(Color(0xFF17302B), RoundedCornerShape(50))) {
-                Box(Modifier.fillMaxWidth((.18f + glow * .82f).coerceIn(.18f, 1f)).fillMaxHeight().background(Brush.horizontalGradient(listOf(Color(0xFF00E676), Lime, Mint)), RoundedCornerShape(50)))
-            }
-            Spacer(Modifier.height(13.dp))
-            Text("PREPARANDO TU ESPACIO DE TRABAJO", color = Muted.copy(alpha = .92f), style = MaterialTheme.typography.labelSmall, letterSpacing = 1.35.sp)
+            Text("PREPARANDO TU ESPACIO DE TRABAJO", color = Color(0xFF80A99A), fontSize = 9.sp, letterSpacing = 2.2.sp)
+            Spacer(Modifier.height(28.dp))
         }
-        Text("GESTIÓN  ·  CONTROL  ·  CRECIMIENTO", color = Color.White.copy(alpha = .58f), style = MaterialTheme.typography.labelSmall, letterSpacing = 1.2.sp, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 35.dp))
-        // Borde luminoso discreto que enmarca la experiencia de bienvenida.
-        Box(Modifier.fillMaxSize().padding(9.dp).border(1.dp, Brush.verticalGradient(listOf(Lime.copy(alpha = .32f), Mint.copy(alpha = .08f), Lime.copy(alpha = .22f))), RoundedCornerShape(28.dp)))
-    }
-}
-
-
-@Composable
-private fun StockProEmblem(modifier: Modifier = Modifier) {
-    Canvas(modifier) {
-        val w = size.width; val h = size.height
-        fun pt(x: Float, y: Float) = Offset(w * x, h * y)
-        val stroke = (w * .045f).coerceAtLeast(2f)
-        val glowStroke = stroke * 2.3f
-        val top = Path().apply { moveTo(w*.50f, h*.07f); lineTo(w*.91f, h*.29f); lineTo(w*.50f, h*.51f); lineTo(w*.09f, h*.29f); close() }
-        val left = Path().apply { moveTo(w*.09f, h*.29f); lineTo(w*.09f, h*.70f); lineTo(w*.50f, h*.93f); lineTo(w*.50f, h*.51f) }
-        val right = Path().apply { moveTo(w*.91f, h*.29f); lineTo(w*.91f, h*.70f); lineTo(w*.50f, h*.93f) }
-        // Soft neon bloom beneath the crisp geometric mark.
-        drawPath(top, Lime.copy(alpha = .16f), style = Stroke(width = glowStroke * 2f))
-        drawPath(left, Lime.copy(alpha = .18f), style = Stroke(width = glowStroke * 2f))
-        drawPath(right, Mint.copy(alpha = .2f), style = Stroke(width = glowStroke * 2f))
-        drawPath(top, Brush.linearGradient(listOf(Color(0xFFE4FFF0), Lime, Mint)), style = Stroke(width = stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
-        drawPath(left, Brush.linearGradient(listOf(Lime, Color(0xFF13C96A))), style = Stroke(width = stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
-        drawPath(right, Brush.linearGradient(listOf(Mint, Color(0xFF087D80))), style = Stroke(width = stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
-        drawLine(Color(0xFFD9FFF0), pt(.50f,.07f), pt(.50f,.51f), strokeWidth = stroke*.8f)
-        drawLine(Lime, pt(.50f,.51f), pt(.30f,.40f), strokeWidth = stroke*.8f)
-        drawLine(Mint, pt(.50f,.51f), pt(.70f,.40f), strokeWidth = stroke*.8f)
-        // Three ascending bars evoke inventory analytics without a generic app icon.
-        drawLine(Color(0xFFE6FFF3), pt(.28f,.65f), pt(.28f,.74f), strokeWidth = stroke*1.35f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-        drawLine(Lime, pt(.39f,.70f), pt(.39f,.79f), strokeWidth = stroke*1.35f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-        drawLine(Mint, pt(.61f,.64f), pt(.61f,.76f), strokeWidth = stroke*1.35f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-        drawLine(Mint, pt(.72f,.59f), pt(.72f,.69f), strokeWidth = stroke*1.35f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
     }
 }
 
