@@ -32,3 +32,13 @@ Este archivo distingue el código existente de las funciones pendientes. No usar
 - Se actualizaron las tarjetas métricas y de informes con superficies oscuras, acentos por color y bordes discretos.
 - Se reforzaron encabezados de módulos, contornos de tarjetas y la barra inferior.
 - Esta revisión visual no sustituye una auditoría funcional ni demuestra por sí sola que el proyecto compile; debe ejecutarse `gradle assembleDebug` en CI y revisarse en un teléfono real.
+
+
+## Refinamiento visual premium — 27/10/2026 (segunda pasada)
+- Unifiqué los tokens de color en negro grafito, verde esmeralda, menta/cian y acentos semánticos; se redujo el uso de contornos verdes intensos en todas las tarjetas.
+- Apliqué fondos atmosféricos oscuros a las pantallas principales y superficies con degradados más discretos.
+- Reforcé la jerarquía de títulos con el overline de marca StockPro Premium en encabezados compartidos, Inventario y Contactos.
+- Rediseñé las tarjetas de resumen/acción para usar degradados controlados, bordes de bajo contraste y contenedores de iconos coherentes.
+- Ajusté la tipografía global y los colores de Material 3 para mejorar consistencia entre formularios, navegación y contenido.
+- Se mantuvieron los flujos y modelos existentes; esta pasada es visual y no afirma completar las funciones de negocio pendientes.
+- Pendiente imprescindible: compilar con GitHub Actions y revisar capturas reales en teléfono para corregir cualquier diferencia de densidad, recorte o contraste.
