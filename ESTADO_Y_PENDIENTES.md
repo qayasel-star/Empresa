@@ -42,3 +42,10 @@ Este archivo distingue el código existente de las funciones pendientes. No usar
 - Ajusté la tipografía global y los colores de Material 3 para mejorar consistencia entre formularios, navegación y contenido.
 - Se mantuvieron los flujos y modelos existentes; esta pasada es visual y no afirma completar las funciones de negocio pendientes.
 - Pendiente imprescindible: compilar con GitHub Actions y revisar capturas reales en teléfono para corregir cualquier diferencia de densidad, recorte o contraste.
+
+
+### Bienvenida cinematográfica StockPro (27-10-2026)
+- Se renovó `WelcomeScreen` con fondo negro/verde, partículas de luz, horizonte digital en perspectiva, barrido luminoso, halos, dos órbitas animadas, pulso del emblema, brillo y barra de progreso animada.
+- La bienvenida permanece aproximadamente 4,2 segundos antes de la transición a la aplicación.
+- La animación está construida en Jetpack Compose y no depende de imágenes remotas ni de permisos de red.
+- Pendiente: compilar mediante GitHub Actions e inspeccionar la animación en un dispositivo Android real; no se declara compilación verificada desde este entorno.
