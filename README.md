@@ -1,21 +1,24 @@
 # StockPro Premium — proyecto Android
 
-Aplicación nativa Android escrita en Kotlin y Jetpack Compose, con interfaz oscura verde esmeralda/lima, almacenamiento local Room, inventario, movimientos de venta y compra, clientes/proveedores, alertas, informes, catálogo compartible, copias de seguridad y configuración.
+Aplicación Android nativa escrita en Kotlin y Jetpack Compose. Este es el proyecto continuo StockPro Premium del repositorio oficial `https://github.com/qayasel-star/Empresa`.
 
 ## Identidad visual
-- Icono de launcher incluido en densidades Android y en formato adaptive icon para Android 8.0+.
-- Nombre que aparece instalado: **StockPro Premium**.
-- Pantalla de bienvenida Compose con animación de pulso, brillo y transición hacia la aplicación.
+- Referencia principal: maqueta Premium compartida por el usuario, con negro/verde petróleo, verde lima neón, tarjetas redondeadas y navegación consistente.
+- Icono de launcher incluido en densidades Android y formato adaptive icon.
+- Nombre instalado: **StockPro Premium**.
+- Pantalla de bienvenida animada y panel principal con tarjetas de métricas.
 
-## Compilar APK en GitHub desde el teléfono
-1. Descarga y descomprime este ZIP.
-2. Crea un repositorio GitHub vacío.
-3. Sube **el contenido** de esta carpeta al nivel raíz del repositorio (deben quedar `app/`, `build.gradle.kts`, `settings.gradle.kts` y `.github/workflows/android.yml`).
-4. Abre la pestaña **Actions** y ejecuta `Compilar StockPro Premium APK` si no comienza automáticamente.
-5. Cuando el trabajo termine correctamente, abre la ejecución y descarga el artefacto `StockPro-Premium-debug-apk`. Dentro estará `app-debug.apk`.
+## Compilar APK desde un teléfono Android
+1. Mantén el contenido del proyecto en la raíz del repositorio `Empresa` (deben quedar `app/`, `build.gradle.kts`, `settings.gradle.kts` y `.github/workflows/compilar-apk.yml`).
+2. Abre la pestaña **Actions** de `https://github.com/qayasel-star/Empresa`.
+3. Ejecuta **Compilar StockPro APK** o espera a que termine el flujo tras un commit.
+4. En la ejecución correcta, descarga el artefacto `StockPro-Premium-APK`, que contiene el APK debug.
+
+## Actualización visual
+Se mejoraron el encabezado del panel, la bienvenida, el resumen de inventario, las tarjetas de métricas, las filas de productos, los encabezados de módulos y la paleta Material 3. Se conservan las acciones y rutas existentes. La apariencia final debe verificarse en el teléfono y pueden requerirse iteraciones visuales adicionales.
 
 ## Estado de verificación
-Este paquete se ha preparado como código fuente; **no se afirma que esté compilado ni probado en un dispositivo**. La compilación de referencia debe ejecutarse en GitHub Actions. Si falla, abre el registro del paso de compilación y utiliza el primer error Kotlin/Gradle para corregirlo.
+El usuario confirmó que una versión anterior se compiló en GitHub Actions y se instaló. **Esta actualización visual concreta todavía necesita una nueva ejecución de GitHub Actions y una comprobación en el dispositivo**; no se afirma que este ZIP ya haya compilado.
 
 ## Límites conocidos
-La sincronización en nube y la licencia comercial/servidor no se activan por el mero hecho de tener pantallas visuales. Las copias de seguridad son locales/exportables; no sustituyen una infraestructura remota. Revisa los datos de prueba antes de usar la app para operaciones comerciales reales.
+La sincronización en nube y la licencia comercial no se activan por el mero hecho de tener pantallas. Las copias de seguridad son locales/exportables y no sustituyen una infraestructura remota. Antes de usar la aplicación para operaciones comerciales reales, verifica los flujos de negocio y los datos almacenados.

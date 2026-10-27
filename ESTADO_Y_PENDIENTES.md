@@ -12,3 +12,10 @@
 - Instalar APK resultante en teléfono físico y comprobar icono/recorte del launcher.
 - Probar flujos de alta/edición, ventas, compras, exportación/importación y persistencia.
 - La sincronización real en la nube y la validación de licencia requieren backend; las pantallas no significan que esos servicios estén conectados.
+
+
+## Estado de diseño tras la actualización visual
+- Se aplicó una paleta oscura más profunda, acentos verde lima y superficies degradadas en la bienvenida del panel, métricas, encabezados de módulos y filas de inventario.
+- Se mantienen las funciones existentes de navegación, inventario, movimientos, ventas, compras, contactos, alertas, informes, copias de seguridad y configuración.
+- La apariencia final debe validarse en el dispositivo Android del usuario; la referencia es una maqueta de alta fidelidad y pueden requerirse iteraciones adicionales para igualar detalles, iconografía y espaciados.
+- La compilación de esta actualización está pendiente de ejecutar en GitHub Actions.

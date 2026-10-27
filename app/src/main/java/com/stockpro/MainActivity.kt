@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.stockpro.data.ProductEntity
@@ -83,9 +84,9 @@ class MainActivity : ComponentActivity() {
 
 private val Lime = Color(0xFFB6F36A)
 private val Muted = Color(0xFF9BA99E)
-private val AppBg = Color(0xFF031D19)
-private val Panel = Color(0xFF082A25)
-private val PanelRaised = Color(0xFF0C3930)
+private val AppBg = Color(0xFF030E0C)
+private val Panel = Color(0xFF081C17)
+private val PanelRaised = Color(0xFF10372A)
 private val Blue = Color(0xFF087BEA)
 private val Orange = Color(0xFFFF9418)
 
@@ -144,7 +145,11 @@ private fun MainShell(vm: StockProViewModel) {
     Scaffold(
         containerColor = AppBg,
         bottomBar = {
-            NavigationBar(containerColor = Color(0xFF06231F), contentColor = Lime) {
+            NavigationBar(
+                containerColor = Color(0xFF041713),
+                contentColor = Lime,
+                tonalElevation = 0.dp,
+            ) {
                 val tabs = listOf(Tab.HOME, Tab.INVENTORY, Tab.SALES, Tab.PURCHASES, Tab.MORE)
                 val icons = listOf(Icons.Default.Home, Icons.Default.Inventory2, Icons.Default.ShoppingCart, Icons.Default.ArrowUpward, Icons.Default.MoreHoriz)
                 tabs.forEachIndexed { i, item -> NavigationBarItem(selected = tab == item, onClick = { tab = item; module = item.title }, icon = { Icon(icons[i], contentDescription = item.title) }, label = { Text(item.title, maxLines = 1) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Lime, selectedTextColor = Lime, indicatorColor = Color(0xFF123D2B), unselectedIconColor = Muted, unselectedTextColor = Muted)) }
@@ -179,34 +184,50 @@ private fun Dashboard(modifier: Modifier, count: Int, low: Int, products: List<P
     val inventoryValue = products.sumOf { it.stockQuantity * it.purchasePrice }
     val notificationsEnabled = BusinessStore.setting(context, "notifications", "true") == "true"
     val lowProducts = if (notificationsEnabled) products.filter { it.stockQuantity <= it.minimumStock }.take(3) else emptyList()
-    Column(modifier.fillMaxSize().background(AppBg).verticalScroll(rememberScrollState()).padding(horizontal = 18.dp).padding(top = 12.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).background(Color(0xFF123C2A), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Inventory2, null, tint = Lime, modifier = Modifier.size(27.dp))
+    Column(modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF03140F), AppBg, Color(0xFF041A16)))).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).padding(top = 12.dp)) {
+        Row(Modifier.fillMaxWidth().padding(bottom = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(46.dp).background(Brush.linearGradient(listOf(Color(0xFF39FF83), Color(0xFF0B633E), Color(0xFF06271F))), RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Inventory2, null, tint = Color.White, modifier = Modifier.size(27.dp))
+                Icon(Icons.Default.TrendingUp, null, tint = Lime, modifier = Modifier.size(15.dp).align(Alignment.BottomEnd).offset(x = 2.dp, y = 2.dp))
             }
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(11.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Stock", color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
                     Text("Pro", color = Lime, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
                 }
-                Text("Tu negocio en buenas manos", color = Muted, style = MaterialTheme.typography.bodySmall)
+                Text("P R E M I U M  ·  GESTIÓN INTELIGENTE", color = Muted, style = MaterialTheme.typography.labelSmall, maxLines = 1)
             }
             IconButton(onClick = { }) { Icon(Icons.Default.Notifications, "Notificaciones", tint = Lime) }
         }
-        Spacer(Modifier.height(18.dp))
-        Text("¡Hola, Emprendedor!", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        Text("Tu negocio, tu futuro.", color = Muted, style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(18.dp))
-        Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF087D51)), shape = RoundedCornerShape(22.dp), modifier = Modifier.fillMaxWidth().clickable(onClick = onInventory)) {
-            Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text("VALOR DEL INVENTARIO", color = Color(0xFFD6FFE8), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(6.dp))
-                    Text(money(inventoryValue), color = Color.White, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold)
-                    Text("Valorado al precio de compra · $count productos", color = Color(0xFFD6FFE8), style = MaterialTheme.typography.bodySmall)
+        Card(colors = CardDefaults.cardColors(containerColor = Color.Transparent), shape = RoundedCornerShape(24.dp), modifier = Modifier.fillMaxWidth()) {
+            Box(Modifier.background(Brush.linearGradient(listOf(Color(0xFF126C49), Color(0xFF073A2E), Color(0xFF08251F)))).padding(18.dp)) {
+                Box(Modifier.size(120.dp).align(Alignment.CenterEnd).background(Lime.copy(alpha = .06f), CircleShape))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(48.dp).background(Color.White.copy(alpha = .10f), CircleShape), contentAlignment = Alignment.Center) { Icon(Icons.Default.People, null, tint = Lime, modifier = Modifier.size(27.dp)) }
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text("Hola, bienvenido", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = Color.White)
+                        Spacer(Modifier.height(3.dp))
+                        Text("Gestiona tu negocio con éxito", color = Color(0xFFD3F7E2), style = MaterialTheme.typography.bodySmall)
+                        Spacer(Modifier.height(10.dp))
+                        Text("●  Tu espacio de trabajo está listo", color = Lime, style = MaterialTheme.typography.labelSmall)
+                    }
                 }
-                Icon(Icons.Default.Inventory2, null, tint = Color.White.copy(alpha = .9f), modifier = Modifier.size(44.dp))
+            }
+        }
+        Spacer(Modifier.height(14.dp))
+        Card(colors = CardDefaults.cardColors(containerColor = Color.Transparent), shape = RoundedCornerShape(22.dp), modifier = Modifier.fillMaxWidth().clickable(onClick = onInventory)) {
+            Box(Modifier.background(Brush.linearGradient(listOf(Color(0xFF0D5B3B), Color(0xFF073629), Color(0xFF08271F)))).padding(18.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("VALOR DEL INVENTARIO", color = Color(0xFFB9F8D0), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
+                        Spacer(Modifier.height(6.dp))
+                        Text(money(inventoryValue), color = Color.White, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold)
+                        Text("Al precio de compra · $count productos", color = Color(0xFFB9F8D0), style = MaterialTheme.typography.bodySmall)
+                    }
+                    Box(Modifier.size(58.dp).background(Lime.copy(alpha = .13f), RoundedCornerShape(19.dp)), contentAlignment = Alignment.Center) { Icon(Icons.Default.Inventory2, null, tint = Lime, modifier = Modifier.size(31.dp)) }
+                }
             }
         }
         Spacer(Modifier.height(12.dp))
@@ -265,12 +286,15 @@ private fun Dashboard(modifier: Modifier, count: Int, low: Int, products: List<P
 
 @Composable
 private fun DashboardMetric(title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector, color: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Card(modifier = modifier.heightIn(min = 106.dp).clickable(onClick = onClick), colors = CardDefaults.cardColors(containerColor = color), shape = RoundedCornerShape(18.dp)) {
-        Column(Modifier.fillMaxWidth().padding(14.dp)) {
-            Icon(icon, null, tint = Color.White, modifier = Modifier.size(23.dp))
-            Spacer(Modifier.height(8.dp))
-            Text(value, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(title, color = Color.White.copy(alpha = .88f), style = MaterialTheme.typography.bodySmall)
+    Card(modifier = modifier.heightIn(min = 112.dp).clickable(onClick = onClick), colors = CardDefaults.cardColors(containerColor = Color.Transparent), shape = RoundedCornerShape(20.dp), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+        Box(Modifier.fillMaxWidth().background(Brush.linearGradient(listOf(color.copy(alpha = .27f), Color(0xFF0A2922), Color(0xFF071E19)))).padding(14.dp)) {
+            Column(Modifier.fillMaxWidth()) {
+                Box(Modifier.size(36.dp).background(color.copy(alpha = .20f), RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) { Icon(icon, null, tint = color, modifier = Modifier.size(21.dp)) }
+                Spacer(Modifier.height(10.dp))
+                Text(value, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Spacer(Modifier.height(2.dp))
+                Text(title, color = Muted, style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }
@@ -293,9 +317,9 @@ private fun MoreScreen(modifier: Modifier, onOpen: (String) -> Unit) {
         Spacer(Modifier.height(18.dp))
         LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(bottom = 20.dp)) {
             items(modules) { item ->
-                Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(17.dp), modifier = Modifier.fillMaxWidth().clickable { onOpen(item.first) }) {
+                Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF081E18)), shape = RoundedCornerShape(19.dp), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp), modifier = Modifier.fillMaxWidth().clickable { onOpen(item.first) }) {
                     Row(Modifier.padding(15.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(46.dp).background(Color(0xFF123D2B), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) { Icon(item.third, null, tint = Lime) }
+                        Box(Modifier.size(46.dp).background(Brush.linearGradient(listOf(Color(0xFF1A6944), Color(0xFF0B3025))), RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) { Icon(item.third, null, tint = Lime) }
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) { Text(item.first, fontWeight = FontWeight.SemiBold); Text(item.second, color = Muted, style = MaterialTheme.typography.bodySmall) }
                         Text("›", color = Lime, style = MaterialTheme.typography.headlineMedium)
@@ -335,7 +359,7 @@ private fun InventoryScreen(modifier: Modifier, products: List<ProductEntity>, v
             FilledIconButton(onClick = { editing = null; showForm = true }, colors = IconButtonDefaults.filledIconButtonColors(containerColor = Lime, contentColor = Color(0xFF17210F))) { Icon(Icons.Default.Add, "Añadir producto") }
         }
         Spacer(Modifier.height(18.dp))
-        OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Buscar producto o código") }, leadingIcon = { Icon(Icons.Default.Search, null) }, singleLine = true, shape = RoundedCornerShape(16.dp))
+        OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Buscar producto o código") }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Lime) }, singleLine = true, shape = RoundedCornerShape(17.dp), colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Lime, unfocusedBorderColor = Color(0xFF28513F), focusedContainerColor = Color(0xFF071A15), unfocusedContainerColor = Color(0xFF071A15)))
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(selected = !filterLow && selectedCategoryId == null, onClick = { filterLow = false; selectedCategoryId = null }, label = { Text("Todos (${products.size})") })
@@ -369,15 +393,19 @@ private fun InventoryScreen(modifier: Modifier, products: List<ProductEntity>, v
 
 @Composable
 private fun ProductRow(product: ProductEntity, onClick: () -> Unit, onAdjust: () -> Unit) {
-    Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(48.dp).background(Color(0xFF123D2B), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) { Icon(Icons.Default.Inventory2, null, tint = Lime) }
+    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF08241E)), shape = RoundedCornerShape(20.dp), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp), modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(13.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(54.dp).background(Brush.linearGradient(listOf(Color(0xFF1A6845), Color(0xFF0B3529))), RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) { Icon(Icons.Default.Inventory2, null, tint = Lime, modifier = Modifier.size(26.dp)) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f).clickable(onClick = onClick)) {
-                Text(product.name, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(product.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(if (product.sku.isBlank()) "Sin referencia" else "Ref. ${product.sku}", color = Muted, style = MaterialTheme.typography.bodySmall)
-                Text("Stock: ${product.stockQuantity} ${product.unit}", color = if (product.stockQuantity <= product.minimumStock) Color(0xFFFFB86B) else Lime, style = MaterialTheme.typography.labelMedium)
-                if (product.salePrice > 0) Text("Venta: ${money(product.salePrice)} · Compra: ${money(product.purchasePrice)}", color = Muted, style = MaterialTheme.typography.bodySmall)
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Box(Modifier.size(6.dp).background(if (product.stockQuantity <= product.minimumStock) Color(0xFFFFB86B) else Lime, CircleShape))
+                    Text("Stock: ${product.stockQuantity} ${product.unit}", color = if (product.stockQuantity <= product.minimumStock) Color(0xFFFFB86B) else Lime, style = MaterialTheme.typography.labelMedium)
+                }
+                if (product.salePrice > 0) Text("Venta ${money(product.salePrice)}  ·  Compra ${money(product.purchasePrice)}", color = Muted, style = MaterialTheme.typography.bodySmall)
             }
             IconButton(onClick = onAdjust) { Icon(Icons.Default.Add, "Ajustar stock", tint = Lime) }
         }
@@ -439,10 +467,13 @@ private fun StockAdjustmentDialog(product: ProductEntity, onDismiss: () -> Unit,
 
 @Composable
 private fun PremiumHeader(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Row(Modifier.fillMaxWidth().padding(bottom = 18.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(48.dp).background(Brush.linearGradient(listOf(Color(0xFF1D6B43), Color(0xFF0A3329))), RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) { Icon(icon, null, tint = Lime, modifier = Modifier.size(25.dp)) }
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) { Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold); Text(subtitle, color = Muted, style = MaterialTheme.typography.bodySmall) }
+    Row(Modifier.fillMaxWidth().padding(bottom = 20.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(50.dp).background(Brush.linearGradient(listOf(Color(0xFF3DFF91), Color(0xFF126A43), Color(0xFF082B22))), RoundedCornerShape(17.dp)), contentAlignment = Alignment.Center) { Icon(icon, null, tint = Color.White, modifier = Modifier.size(26.dp)) }
+        Spacer(Modifier.width(13.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold, color = Color.White)
+            Text(subtitle, color = Muted, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        }
         Box(Modifier.size(9.dp).background(Lime, CircleShape))
     }
 }
