@@ -206,7 +206,7 @@ private fun WelcomeScreen() {
                 Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(Brush.horizontalGradient(listOf(emerald, mint)), RoundedCornerShape(50)))
             }
             Spacer(Modifier.height(14.dp))
-            Text("PREPARANDO TU ESPACIO DE TRABAJO", color = Color(0xFF80A99A), fontSize = 9.sp, letterSpacing = 2.2.sp)
+            Text("INICIALIZANDO TU ESPACIO DE TRABAJO", color = Color(0xFF80A99A), fontSize = 9.sp, letterSpacing = 1.8.sp)
             Spacer(Modifier.height(28.dp))
         }
     }
@@ -284,7 +284,7 @@ private fun Dashboard(modifier: Modifier, count: Int, low: Int, products: List<P
             Text("TU NEGOCIO, BAJO CONTROL  ·  RESUMEN GENERAL", color = Muted, style = MaterialTheme.typography.labelSmall, letterSpacing = .8.sp)
         }
         Spacer(Modifier.height(18.dp))
-        Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(24.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Lime.copy(alpha = .55f)), modifier = Modifier.fillMaxWidth().clickable(onClick = onInventory)) {
+        Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(24.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Brush.linearGradient(listOf(Lime.copy(alpha = .62f), Mint.copy(alpha = .14f), Hairline))), modifier = Modifier.fillMaxWidth().clickable(onClick = onInventory)) {
             Row(Modifier.fillMaxWidth().background(Brush.linearGradient(listOf(Color(0xFF12563F), Color(0xFF0C2A28), Color(0xFF09151A)))).padding(19.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text("VALOR DEL INVENTARIO", color = Lime, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
@@ -479,10 +479,17 @@ private fun ProductRow(product: ProductEntity, onClick: () -> Unit, onAdjust: ()
     }
 }
 
+private fun generateProductSku(): String {
+    // Timestamp-based reference: created immediately when the new-product form is composed.
+    // Milliseconds reduce collision risk while remaining readable and editable by the user.
+    val stamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMMdd-HHmmss-SSS"))
+    return "SP-$stamp".uppercase(java.util.Locale.ROOT)
+}
+
 @Composable
 private fun ProductDialog(product: ProductEntity?, categories: List<CategoryEntity>, onDismiss: () -> Unit, onSave: (Long?, String, String, String, Int, Int, String, String, Double, Double, String, Long?) -> Unit) {
     var name by remember(product?.id) { mutableStateOf(product?.name.orEmpty()) }
-    var sku by remember(product?.id) { mutableStateOf(product?.sku.orEmpty()) }
+    var sku by remember(product?.id) { mutableStateOf(product?.sku?.takeIf { it.isNotBlank() } ?: if (product == null) generateProductSku() else "") }
     var barcode by remember(product?.id) { mutableStateOf(product?.barcode.orEmpty()) }
     var stock by remember(product?.id) { mutableStateOf((product?.stockQuantity ?: 0).toString()) }
     var min by remember(product?.id) { mutableStateOf((product?.minimumStock ?: 0).toString()) }
@@ -493,11 +500,31 @@ private fun ProductDialog(product: ProductEntity?, categories: List<CategoryEnti
     var expiryDate by remember(product?.id) { mutableStateOf(product?.expiryDate.orEmpty()) }
     var categoryId by remember(product?.id) { mutableStateOf(product?.categoryId) }
     var validation by remember { mutableStateOf<String?>(null) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text(if (product == null) "Nuevo producto" else "Editar producto") }, text = {
+    AlertDialog(onDismissRequest = onDismiss, title = {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Box(Modifier.size(42.dp).background(Brush.linearGradient(listOf(Color(0xFF123E32), Color(0xFF0B2023))), RoundedCornerShape(13.dp)).border(1.dp, Mint.copy(alpha = .42f), RoundedCornerShape(13.dp)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Inventory2, null, tint = Lime, modifier = Modifier.size(23.dp))
+            }
+            Column {
+                Text(if (product == null) "Nuevo producto" else "Editar producto", fontWeight = FontWeight.Bold)
+                Text("FICHA DE INVENTARIO · STOCKPRO", color = Muted, style = MaterialTheme.typography.labelSmall, letterSpacing = 1.sp)
+            }
+        }
+    }, text = {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.heightIn(max = 520.dp)) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item { OutlinedTextField(name, { name = it; validation = null }, label = { Text("Nombre *") }, singleLine = true, modifier = Modifier.fillMaxWidth()) }
-                item { OutlinedTextField(sku, { sku = it }, label = { Text("Referencia / SKU") }, singleLine = true, modifier = Modifier.fillMaxWidth()) }
+                item {
+                    OutlinedTextField(
+                        value = sku,
+                        onValueChange = { sku = it.uppercase().filter { c -> c.isLetterOrDigit() || c == '-' || c == '_' } },
+                        label = { Text("Referencia / SKU *") },
+                        supportingText = { Text(if (product == null) "Generado automáticamente al abrir el formulario · puedes editarlo" else "Referencia del producto · puedes editarla") },
+                        trailingIcon = { Text("AUTO", color = Lime, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(end = 8.dp)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 item { OutlinedTextField(barcode, { barcode = it }, label = { Text("Código de barras") }, singleLine = true, modifier = Modifier.fillMaxWidth()) }
                 item { OutlinedTextField(stock, { stock = it.filter { c -> c.isDigit() } }, label = { Text("Stock actual") }, singleLine = true, modifier = Modifier.fillMaxWidth()) }
                 item { OutlinedTextField(min, { min = it.filter { c -> c.isDigit() } }, label = { Text("Avisar con stock igual o inferior a") }, singleLine = true, modifier = Modifier.fillMaxWidth()) }
@@ -510,7 +537,7 @@ private fun ProductDialog(product: ProductEntity?, categories: List<CategoryEnti
                 item { validation?.let { Text(it, color = MaterialTheme.colorScheme.error) } }
             }
         }
-    }, confirmButton = { TextButton(onClick = { val s = stock.toIntOrNull(); val m = min.toIntOrNull(); if (name.isBlank()) validation = "El nombre es obligatorio." else if (s == null || m == null) validation = "Introduce cantidades válidas." else if ((purchasePrice.toDoubleOrNull() ?: 0.0) < 0 || (salePrice.toDoubleOrNull() ?: 0.0) < 0) validation = "Los precios deben ser positivos." else if (expiryDate.isNotBlank() && !Regex("\\d{4}-\\d{2}-\\d{2}").matches(expiryDate)) validation = "Usa el formato de fecha AAAA-MM-DD." else onSave(product?.id, name, sku, barcode, s, m, unit, notes, purchasePrice.toDoubleOrNull() ?: 0.0, salePrice.toDoubleOrNull() ?: 0.0, expiryDate, categoryId) }) { Text("Guardar") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
+    }, confirmButton = { TextButton(onClick = { val s = stock.toIntOrNull(); val m = min.toIntOrNull(); if (name.isBlank()) validation = "El nombre es obligatorio." else if (sku.isBlank()) validation = "La referencia SKU es obligatoria; genera una o escribe una referencia." else if (s == null || m == null) validation = "Introduce cantidades válidas." else if ((purchasePrice.toDoubleOrNull() ?: 0.0) < 0 || (salePrice.toDoubleOrNull() ?: 0.0) < 0) validation = "Los precios deben ser positivos." else if (expiryDate.isNotBlank() && !Regex("\\d{4}-\\d{2}-\\d{2}").matches(expiryDate)) validation = "Usa el formato de fecha AAAA-MM-DD." else onSave(product?.id, name, sku, barcode, s, m, unit, notes, purchasePrice.toDoubleOrNull() ?: 0.0, salePrice.toDoubleOrNull() ?: 0.0, expiryDate, categoryId) }) { Text("Guardar") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
 }
 
 @Composable
