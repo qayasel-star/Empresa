@@ -1,22 +1,30 @@
-# Auditoría técnica y visual de StockPro Premium
+# Auditoría de StockPro Premium
 
-## Cambios aplicados en esta entrega
+## Hallazgos visuales basados en las capturas del dispositivo
+- La identidad general oscura/esmeralda existe, pero los cuadros de diálogo muestran superficies moradas/grisáceas que no corresponden a la marca.
+- En Ventas y Compras, los estados sin productos ocupan demasiado espacio y hacen que los formularios parezcan inactivos; debe probarse con inventario real y con inventario vacío.
+- La barra inferior y los formularios necesitan verificaciones en distintos tamaños de pantalla y con barras del sistema activas.
+- La bienvenida Compose ya contiene animación vectorial, órbitas, partículas, cuadrícula de perspectiva, haz de luz y progreso. Su apariencia/fluidez debe confirmarse en dispositivos físicos.
+- Los recursos del launcher incluyen iconos PNG por densidad y un icono adaptativo vectorial con cubo, órbitas y señal de crecimiento.
 
-- **SKU automático al abrir “Nuevo producto”:** genera una referencia `SP-YYMMDD-HHMMSS-SSS` en el estado inicial del formulario. Sigue siendo editable, se normaliza a mayúsculas y admite letras, números, guion y guion bajo. El formulario no permite guardar una referencia vacía. La capa Room ya comprueba duplicados y devuelve un mensaje entendible.
-- **Bienvenida animada:** se conserva y revisa la composición nativa de Jetpack Compose: fondo oscuro cinematográfico, cuadrícula en perspectiva, partículas, horizonte de luz, dos órbitas, cubo vectorial con brillo, barrido luminoso, pulso y progreso animado. La entrada de la aplicación usa transiciones de aparición.
-- **Icono de marca:** se actualizó el icono adaptativo vectorial y los PNG de launcher para densidades mdpi–xxxhdpi, con cubo tridimensional, señal de crecimiento y órbitas verde esmeralda/cian.
-- **Consistencia visual:** se mantienen los tokens de color oscuro premium y se ajustó el borde del panel de valor del inventario con un degradado discreto.
+## Cambios de esta revisión
+- Se fijó explícitamente el color de superficie, título y texto de los AlertDialog para evitar que hereden tonos de superficie ajenos a la paleta StockPro.
+- Los chips de categoría del formulario de producto ahora usan contenedores y estados seleccionados de la paleta esmeralda/cian.
+- Las barras de estado y navegación de la configuración Android se alinearon con el fondo oscuro de la aplicación y el acento esmeralda.
+- SKU: el generador está separado en `data/ProductSku.kt`, crea referencias legibles con prefijo `SP-`, fecha/hora y sufijo alfanumérico; la normalización se aplica al guardar.
 
-## Hallazgos de la revisión del código
+## Arquitectura actual
+La aplicación sigue siendo un solo módulo Gradle `:app`, organizado por paquetes funcionales (`data`, `ui/inventory`, `ui/commerce`, `ui/operations`, `ui/theme`). No son módulos Gradle independientes.
 
-- Aplicación Android nativa con Kotlin, Jetpack Compose, Material 3 y Room.
-- El inventario, movimientos de stock, ventas/compras locales y varios módulos están implementados en la actividad principal; no es todavía una arquitectura modular por pantalla.
-- El flujo de productos ya valida cantidades, precios, fecha de vencimiento y conflictos de SKU/código de barras en la capa de datos.
-- El SKU anterior comenzaba vacío, que era el incumplimiento funcional solicitado; ahora se inicializa al abrir el formulario.
-- El proyecto no contiene Gradle Wrapper. El workflow de GitHub Actions instala Gradle 8.9 y compila con Java 17.
-- Hay opciones de configuración/licencia y avisos que el propio código identifica como locales o pendientes de integración; no deben presentarse como servicios en la nube ya activos.
-- No hay pruebas automatizadas visibles para los flujos principales de producto/stock, por lo que se recomienda añadir pruebas de SKU duplicado, alta/edición de productos y movimientos de inventario.
+## Riesgos y validaciones pendientes
+- No se ha ejecutado una compilación Android completa de este ZIP ni pruebas instrumentadas en dispositivo en este entorno.
+- La unicidad de SKU se verifica desde la lógica de guardado, pero conviene reforzarla con índice único en Room y gestionar conflictos de inserción de forma transaccional.
+- Falta una revisión funcional completa de ventas, compras, contactos, alertas, informes y copias de seguridad con datos reales.
+- La bienvenida se muestra desde Compose al abrir la actividad; no se ha validado una transición desde un splash nativo de Android 12+.
+- La integración del icono está presente en recursos y manifiesto; no se ha inspeccionado en launchers de distintos fabricantes.
 
-## Verificación y límites
-
-Se revisó la estructura fuente y se regeneraron los recursos del icono. Esta entrega **no se declara compilada ni probada en un dispositivo**: la compilación final debe ejecutarse en GitHub Actions. Si el workflow falla, el log de esa ejecución es la fuente para el siguiente arreglo.
+## Próximos pasos de aceptación
+1. Ejecutar `gradle assembleDebug` en GitHub Actions y corregir cualquier error real del log.
+2. Instalar la APK compilada y revisar bienvenida, launcher, diálogos, teclado, navegación y orientación.
+3. Probar alta/edición/duplicación de SKU, ventas que descuentan stock y compras que lo incrementan.
+4. Añadir pruebas de UI y una restricción única de SKU con migración de base de datos si corresponde.

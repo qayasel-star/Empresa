@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.stockpro.data.ProductEntity
+import com.stockpro.data.ProductSku
 import com.stockpro.data.CategoryEntity
 import com.stockpro.data.StockProDatabase
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,12 +23,13 @@ class StockProViewModel(application: Application) : AndroidViewModel(application
             try {
                 val cleanName = name.trim()
                 require(cleanName.isNotEmpty()) { "El nombre es obligatorio." }
+                val normalizedSku = ProductSku.normalize(sku)
+                require(normalizedSku.isNotBlank()) { "La referencia SKU es obligatoria." }
                 require(stock >= 0) { "El stock inicial no puede ser negativo." }
                 require(minStock >= 0) { "El stock mínimo no puede ser negativo." }
                 require(purchasePrice >= 0 && salePrice >= 0) { "Los precios no pueden ser negativos." }
                 require(expiryDate.isBlank() || runCatching { java.time.LocalDate.parse(expiryDate) }.isSuccess) { "La fecha de vencimiento no es válida." }
                 val now = System.currentTimeMillis()
-                val normalizedSku = sku.trim().uppercase()
                 val normalizedBarcode = barcode.trim()
                 if (id == null) {
                     dao.createProductWithInitialStock(ProductEntity(name = cleanName, sku = normalizedSku, barcode = normalizedBarcode, categoryId = categoryId, stockQuantity = 0, minimumStock = minStock, unit = unit.trim().ifBlank { "unidad" }, notes = notes.trim(), purchasePrice = purchasePrice, salePrice = salePrice, expiryDate = expiryDate.trim(), createdAt = now, updatedAt = now), stock)
